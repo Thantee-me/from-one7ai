@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One7AI — แบบสอบถาม Project Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#070D1A; --ink:#0F1B2D; --muted:#68788F; --bg:#EDF1F7; --card:#FFFFFF;
+  --line:#E2E8F2; --aqua:#06B6D4; --blue:#2563EB; --violet:#7C3AED; --danger:#DC4B4B;
+  --grad:linear-gradient(135deg,#06B6D4 0%,#2563EB 55%,#7C3AED 120%);
+  --grad-soft:linear-gradient(135deg,rgba(6,182,212,.09),rgba(37,99,235,.09));
+  --shadow:0 14px 44px rgba(10,22,40,.08); --radius:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;min-height:100vh}
+h1,h2,h3{font-family:'Kanit',sans-serif}
+
+.hero{position:relative;color:#fff;padding:52px 24px 96px;overflow:hidden;
+  background:
+    radial-gradient(720px 340px at 88% -12%, rgba(124,58,237,.30), transparent 62%),
+    radial-gradient(760px 380px at 8% 118%, rgba(6,182,212,.26), transparent 62%),
+    radial-gradient(500px 260px at 55% 35%, rgba(37,99,235,.16), transparent 65%),
+    var(--night);}
+.hero::before{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 90% 80% at 50% 20%, black 30%, transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 20%, black 30%, transparent 75%);
+  pointer-events:none;}
+.hero::after{content:'';position:absolute;width:420px;height:420px;border-radius:50%;right:-140px;top:-140px;
+  background:radial-gradient(circle, rgba(6,182,212,.22), transparent 65%);filter:blur(10px);
+  animation:drift 9s ease-in-out infinite alternate;pointer-events:none;}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-30px,26px) scale(1.08)}}
+@media (prefers-reduced-motion:reduce){.hero::after{animation:none}}
+.hero-inner{max-width:880px;margin:0 auto;position:relative;z-index:1}
+.brand-row{display:flex;align-items:center;gap:14px;margin-bottom:34px}
+.logo-mark{width:44px;height:44px;border-radius:13px;background:var(--grad);display:flex;align-items:center;justify-content:center;
+  font-family:'Kanit',sans-serif;font-weight:700;font-size:1.25rem;color:#fff;box-shadow:0 8px 24px rgba(37,99,235,.45);}
+.logo-text{font-family:'Kanit',sans-serif;font-weight:600;font-size:1.28rem;letter-spacing:.01em}
+.logo-text em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#8FB6D9;border:1px solid rgba(143,182,217,.28);padding:6px 16px;border-radius:999px;margin-bottom:20px;
+  background:rgba(255,255,255,.04);backdrop-filter:blur(6px);}
+.hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero h1{font-size:clamp(1.7rem, 4vw, 2.5rem);font-weight:600;line-height:1.32;max-width:640px;margin-bottom:16px}
+.hero h1 .grad{background:linear-gradient(120deg,#5EEAD4,#60A5FA,#C4B5FD);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:#A8B8CE;font-size:1rem;max-width:560px}
+.hero-meta{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap}
+.hero-meta .m{display:flex;align-items:center;gap:9px;font-size:.86rem;color:#C4D2E4}
+.hero-meta .ic{width:30px;height:30px;border-radius:9px;flex-shrink:0;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:.85rem;}
+
+.progress-card{max-width:880px;margin:-58px auto 0;padding:22px 26px 20px;position:relative;z-index:5;
+  background:rgba(255,255,255,.86);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.7);border-radius:var(--radius);box-shadow:0 20px 60px rgba(7,13,26,.22);}
+@media (max-width:930px){.progress-card{margin-left:16px;margin-right:16px}}
+.orbs{display:flex;align-items:flex-start;position:relative}
+.orb-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;min-width:0}
+.orb-item:not(:last-child)::after{content:'';position:absolute;top:19px;left:calc(50% + 24px);width:calc(100% - 48px);
+  height:3px;border-radius:3px;background:var(--line);z-index:0;transition:background .4s;}
+.orb-item.done:not(:last-child)::after{background:var(--grad)}
+.orb{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.86rem;font-weight:500;background:#fff;
+  border:2px solid var(--line);color:var(--muted);position:relative;z-index:1;transition:all .3s;}
+.orb-item.active .orb{background:var(--grad);border-color:transparent;color:#fff;
+  box-shadow:0 6px 20px rgba(37,99,235,.45), 0 0 0 5px rgba(37,99,235,.12);transform:scale(1.1);}
+.orb-item.done .orb{background:#EAF7F4;border-color:#2DB894;color:#149371}
+.orb-label{font-size:.74rem;font-weight:500;color:var(--muted);text-align:center;line-height:1.3;transition:color .3s}
+.orb-item.active .orb-label{color:var(--ink);font-weight:600}
+@media (max-width:600px){.orb-label{display:none}.progress-card{padding:18px 18px 16px}}
+.bar-row{display:flex;align-items:center;gap:14px;margin-top:18px}
+.bar-track{flex:1;height:7px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar-fill{height:100%;width:20%;border-radius:99px;background:var(--grad);transition:width .45s cubic-bezier(.6,0,.2,1)}
+.bar-text{font-size:.76rem;color:var(--muted);white-space:nowrap}
+.bar-text b{color:var(--ink);font-weight:600}
+
+main{max-width:880px;margin:0 auto;padding:34px 24px 90px}
+.panel{display:none}
+.panel.active{display:block;animation:rise .4s cubic-bezier(.3,0,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.panel.active{animation:none}}
+.panel-title{display:flex;align-items:center;gap:12px;margin:6px 0 20px}
+.panel-title .pt-badge{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  background:var(--night);color:#7DD3FC;padding:5px 13px;border-radius:999px;}
+.panel-title h2{font-size:1.28rem;font-weight:600}
+
+.section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:30px 30px 24px;margin-bottom:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.section::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad);opacity:0;transition:opacity .3s}
+.section:focus-within::before{opacity:1}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+.sec-num{width:46px;height:46px;border-radius:14px;flex-shrink:0;background:var(--grad-soft);
+  border:1px solid rgba(37,99,235,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;line-height:1.1;}
+.sec-num .top{font-size:.88rem;font-weight:500;color:var(--blue)}
+.sec-num .bot{font-size:.58rem;color:#8FA3C0}
+.sec-head h3{font-size:1.08rem;font-weight:600;font-family:'Kanit',sans-serif}
+.sec-purpose{font-size:.8rem;color:var(--muted);margin:0 0 22px 60px;display:flex;align-items:center;gap:7px}
+.sec-purpose::before{content:'';width:14px;height:2px;background:var(--aqua);border-radius:2px}
+@media (max-width:600px){.sec-purpose{margin-left:0}}
+
+.field{margin-bottom:20px}
+.field:last-child{margin-bottom:4px}
+label.q{display:block;font-weight:600;font-size:.9rem;margin-bottom:8px;color:#22344E}
+label.q .req{color:var(--danger)}
+.hint{font-size:.76rem;color:var(--muted);font-weight:400}
+
+input[type=text],input[type=email],input[type=tel],select,textarea{
+  width:100%;font-family:inherit;font-size:.92rem;color:var(--ink);
+  border:1.5px solid var(--line);border-radius:12px;padding:11px 15px;background:#FAFCFE;
+  transition:border-color .18s, box-shadow .18s, background .18s;}
+textarea{min-height:92px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#A6B3C6}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+select{appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2368788F' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;}
+
+.choices{display:flex;flex-wrap:wrap;gap:9px}
+.choices.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}
+.choice{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;
+  padding:11px 15px;background:#FAFCFE;font-size:.88rem;cursor:pointer;user-select:none;transition:all .18s;position:relative;}
+.choice:hover{border-color:#B7C7DE;transform:translateY(-1px);box-shadow:0 4px 12px rgba(10,22,40,.06)}
+.choice .box{width:19px;height:19px;border-radius:6px;flex-shrink:0;border:2px solid #C3CEDD;background:#fff;
+  display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.choice.r .box{border-radius:50%}
+.choice .box svg{opacity:0;transform:scale(.4);transition:all .18s}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice:has(input:checked){border-color:var(--blue);background:var(--grad-soft);box-shadow:0 4px 14px rgba(37,99,235,.14)}
+.choice:has(input:checked) .box{background:var(--grad);border-color:transparent}
+.choice:has(input:checked) .box svg{opacity:1;transform:scale(1)}
+.choice:has(input:focus-visible){box-shadow:0 0 0 4px rgba(37,99,235,.18)}
+
+.other-wrap{display:none;align-items:center;gap:10px;margin-top:10px;
+  background:linear-gradient(135deg,rgba(6,182,212,.05),rgba(124,58,237,.05));
+  border:1.5px dashed #B9C9E4;border-radius:12px;padding:8px 12px;
+  animation:rise .25s cubic-bezier(.3,0,.2,1);}
+.other-wrap.show{display:flex}
+.other-wrap .ow-ic{color:var(--blue);font-size:.95rem;flex-shrink:0}
+.other-wrap input{border:none;background:transparent;padding:6px 4px;box-shadow:none}
+.other-wrap input:focus{box-shadow:none;background:transparent}
+.note-field{margin-top:14px}
+.note-field .nq{font-weight:500;color:var(--muted);font-size:.82rem}
+.note-ta{min-height:60px;font-size:.88rem}
+
+
+.scale{display:flex;gap:8px}
+.scale .schoice{flex:1;position:relative;cursor:pointer;border:1.5px solid var(--line);border-radius:12px;
+  background:#FAFCFE;padding:12px 4px 10px;text-align:center;transition:all .18s;user-select:none;}
+.scale .schoice:hover{border-color:#B7C7DE;transform:translateY(-1px)}
+.scale .schoice input{position:absolute;opacity:0;pointer-events:none}
+.scale .n{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:500;display:block;color:#42536E}
+.scale .t{font-size:.66rem;color:var(--muted);display:block;margin-top:1px}
+.scale .schoice:has(input:checked){background:var(--grad);border-color:transparent;box-shadow:0 6px 18px rgba(37,99,235,.35)}
+.scale .schoice:has(input:checked) .n,.scale .schoice:has(input:checked) .t{color:#fff}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:640px){.two-col{grid-template-columns:1fr}.section{padding:24px 20px 18px}}
+
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:28px}
+button{font-family:'Kanit',sans-serif;font-size:.98rem;font-weight:500;border:none;border-radius:13px;
+  cursor:pointer;padding:13px 30px;transition:all .18s;}
+button:active{transform:translateY(1px)}
+.btn-next,.btn-submit{background:var(--grad);color:#fff;box-shadow:0 10px 26px rgba(37,99,235,.38)}
+.btn-next:hover,.btn-submit:hover{box-shadow:0 14px 32px rgba(37,99,235,.5);transform:translateY(-2px)}
+.btn-back{background:#fff;color:var(--muted);border:1.5px solid var(--line)}
+.btn-back:hover{border-color:#B7C7DE;color:var(--ink)}
+.btn-submit:disabled{opacity:.6;cursor:wait;transform:none}
+
+.alert{display:none;border-radius:13px;padding:13px 18px;font-size:.88rem;margin-top:18px}
+.alert.err{display:flex;align-items:center;gap:10px;background:#FDF0F0;color:var(--danger);
+  border:1px solid #F3CFCF;animation:shake .35s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.success{display:none;text-align:center;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:72px 30px;box-shadow:var(--shadow);}
+.success .icon{width:84px;height:84px;border-radius:50%;background:var(--grad);color:#fff;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
+  box-shadow:0 16px 40px rgba(37,99,235,.4);animation:pop .5s cubic-bezier(.3,1.6,.5,1);}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.success .icon svg{width:38px;height:38px}
+.success h2{font-size:1.45rem;font-weight:600;margin-bottom:10px}
+.success p{color:var(--muted);font-size:.94rem}
+
+footer{text-align:center;color:#93A2B8;font-size:.76rem;padding:0 24px 46px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="brand-row">
+      <div class="logo-mark">7</div>
+      <div class="logo-text">One<em>7</em>AI</div>
+    </div>
+    <div class="hero-eyebrow"><span class="dot"></span>Project Discovery · Requirement Gathering</div>
+    <h1>ออกแบบระบบ AI ที่ใช่<br>เริ่มจาก<span class="grad">การเข้าใจธุรกิจของคุณ</span></h1>
+    <p>แบบสอบถามชุดนี้จะช่วยให้ทีม One7AI เข้าใจเป้าหมาย ปัญหา และความต้องการของท่าน เพื่อออกแบบ Solution ที่ตรงจุดที่สุด</p>
+    <div class="hero-meta">
+      <div class="m"><span class="ic">⏱</span>ใช้เวลา 10–15 นาที</div>
+      <div class="m"><span class="ic">📋</span>18 หัวข้อ · 5 ขั้นตอน</div>
+      <div class="m"><span class="ic">🔒</span>ข้อมูลใช้ออกแบบระบบเท่านั้น</div>
+    </div>
+  </div>
+</div>
+
+<div class="progress-card">
+  <div class="orbs" id="orbs">
+    <div class="orb-item" data-step="0"><div class="orb">1</div><div class="orb-label">ข้อมูล<br>องค์กร</div></div>
+    <div class="orb-item" data-step="1"><div class="orb">2</div><div class="orb-label">เป้าหมาย<br>&amp; ปัญหา</div></div>
+    <div class="orb-item" data-step="2"><div class="orb">3</div><div class="orb-label">งานซ้ำ<br>&amp; ระบบ</div></div>
+    <div class="orb-item" data-step="3"><div class="orb">4</div><div class="orb-label">ข้อจำกัด &amp;<br>ความต้องการ</div></div>
+    <div class="orb-item" data-step="4"><div class="orb">5</div><div class="orb-label">ความสำคัญ &amp;<br>ขั้นตอนถัดไป</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+    <div class="bar-text" id="barText"><b>ขั้นตอนที่ 1</b> จาก 5</div>
+  </div>
+</div>
+
+<main>
+<form id="form" novalidate>
+<div class="panel active" data-panel="0">
+<div class="panel-title"><span class="pt-badge">STEP 01</span><h2>ข้อมูลองค์กร</h2></div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">✉</span><span class="bot">ติดต่อ</span></div><h3>ข้อมูลติดต่อ</h3></div>
+<div class="sec-purpose">สำหรับให้ทีมงาน One7AI ติดต่อกลับ</div>
+<div class="two-col"><div class="field"><label class="q">ชื่อบริษัท / หน่วยงาน <span class="req">*</span></label>
+<input type="text" name="company" required></div>
+<div class="field"><label class="q">ชื่อผู้ตอบแบบสอบถาม <span class="req">*</span></label>
+<input type="text" name="contact_name" required></div>
+<div class="field"><label class="q">เบอร์โทรศัพท์</label>
+<input type="tel" name="contact_phone"></div>
+<div class="field"><label class="q">อีเมล <span class="req">*</span></label>
+<input type="email" name="contact_email" required></div>
+</div></div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">01</span><span class="bot">/ 18</span></div><h3>ประเภทองค์กร</h3></div>
+<div class="sec-purpose">ใช้จัดกลุ่มลูกค้าและกำหนดบริบทของโครงการ</div>
+<div class="field"><label class="q">องค์กรของท่านเป็นประเภทใด <span class="req">*</span> <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices" data-group="org_type" data-req="1">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_type" value="เอกชน">เอกชน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_type" value="หน่วยงานรัฐ / รัฐวิสาหกิจ">หน่วยงานรัฐ / รัฐวิสาหกิจ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_type" value="องค์กรไม่แสวงหากำไร / สมาคม / มูลนิธิ">องค์กรไม่แสวงหากำไร / สมาคม / มูลนิธิ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_type" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="org_type"><span class="ow-ic">✎</span><input type="text" name="org_type_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="org_type_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">02</span><span class="bot">/ 18</span></div><h3>ขนาดองค์กร</h3></div>
+<div class="sec-purpose">เลือกขนาดองค์กรโดยประมาณ</div>
+<div class="field"><label class="q">จำนวนบุคลากรในองค์กร <span class="req">*</span> <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices" data-group="org_size" data-req="1">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_size" value="ต่ำกว่า 50 คน">ต่ำกว่า 50 คน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_size" value="50-99 คน">50-99 คน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_size" value="100-499 คน">100-499 คน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_size" value="500-999 คน">500-999 คน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_size" value="1,000-4,999 คน">1,000-4,999 คน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_size" value="5,000 คนขึ้นไป">5,000 คนขึ้นไป</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="org_size" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="org_size"><span class="ow-ic">✎</span><input type="text" name="org_size_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">03</span><span class="bot">/ 18</span></div><h3>บทบาทของผู้ตอบ</h3></div>
+<div class="sec-purpose">เลือกบทบาทที่ใกล้เคียงที่สุด</div>
+<div class="field"><label class="q">ท่านมีบทบาทใดในองค์กร <span class="req">*</span> <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices grid" data-group="respondent_role" data-req="1">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="เจ้าของกิจการ / CEO / กรรมการผู้จัดการ">เจ้าของกิจการ / CEO / กรรมการผู้จัดการ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="ผู้บริหารระดับสูง">ผู้บริหารระดับสูง</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="หัวหน้าฝ่าย / ผู้จัดการแผนก">หัวหน้าฝ่าย / ผู้จัดการแผนก</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="ทีม IT / Digital / Data">ทีม IT / Digital / Data</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="ทีมปฏิบัติการ / Operation">ทีมปฏิบัติการ / Operation</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="ทีมขาย / การตลาด / บริการลูกค้า">ทีมขาย / การตลาด / บริการลูกค้า</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="ผู้ใช้งานระบบโดยตรง">ผู้ใช้งานระบบโดยตรง</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="ฝ่ายจัดซื้อ / การเงิน / พัสดุ">ฝ่ายจัดซื้อ / การเงิน / พัสดุ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="respondent_role" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="respondent_role"><span class="ow-ic">✎</span><input type="text" name="respondent_role_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+</div>
+</div>
+<div class="panel" data-panel="1">
+<div class="panel-title"><span class="pt-badge">STEP 02</span><h2>เป้าหมาย &amp; ปัญหา</h2></div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">04</span><span class="bot">/ 18</span></div><h3>เป้าหมายหลักของโครงการ</h3></div>
+<div class="sec-purpose">Business Value ที่ต้องการจากโครงการ</div>
+<div class="field"><label class="q">เป้าหมายหลักของโครงการนี้คืออะไร <span class="req">*</span> <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="project_goals" data-req="1">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="ลดงาน manual / งานซ้ำ">ลดงาน manual / งานซ้ำ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="ลดต้นทุนหรือเวลาทำงาน">ลดต้นทุนหรือเวลาทำงาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="เพิ่มยอดขายหรือโอกาสทางธุรกิจ">เพิ่มยอดขายหรือโอกาสทางธุรกิจ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="ยกระดับบริการลูกค้า">ยกระดับบริการลูกค้า</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="เพิ่มความแม่นยำ ลดความผิดพลาด">เพิ่มความแม่นยำ ลดความผิดพลาด</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="ทำ Dashboard / Report ให้ผู้บริหาร">ทำ Dashboard / Report ให้ผู้บริหาร</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="เชื่อมระบบหรือรวมข้อมูลหลายแหล่ง">เชื่อมระบบหรือรวมข้อมูลหลายแหล่ง</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="ทดลองใช้ AI / Automation ก่อนขยายผล">ทดลองใช้ AI / Automation ก่อนขยายผล</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="ยังไม่ชัดเจน ต้องการให้ช่วยค้นหาโจทย์">ยังไม่ชัดเจน ต้องการให้ช่วยค้นหาโจทย์</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="project_goals" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="project_goals"><span class="ow-ic">✎</span><input type="text" name="project_goals_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="project_goals_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">05</span><span class="bot">/ 18</span></div><h3>ปัญหาที่เจอในปัจจุบัน</h3></div>
+<div class="sec-purpose">เลือกปัญหาที่เกิดขึ้นจริง</div>
+<div class="field"><label class="q">ปัญหาที่องค์กรของท่านกำลังเจอ <span class="req">*</span> <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="current_problems" data-req="1">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="งานใช้เวลานานเกินไป">งานใช้เวลานานเกินไป</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="ข้อมูลกระจัดกระจายหลายที่">ข้อมูลกระจัดกระจายหลายที่</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="ต้องกรอกข้อมูลซ้ำหลายระบบ">ต้องกรอกข้อมูลซ้ำหลายระบบ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="งานติดตาม/อนุมัติล่าช้า">งานติดตาม / อนุมัติล่าช้า</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="ลูกค้าหรือผู้ใช้งานรอคำตอบนาน">ลูกค้าหรือผู้ใช้งานรอคำตอบนาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="ทีมงานใช้ Excel/LINE/Email แก้ปัญหาเฉพาะหน้า">ใช้ Excel / LINE / Email แก้ปัญหาเฉพาะหน้า</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="ผู้บริหารไม่เห็นภาพรวมเร็วพอ">ผู้บริหารไม่เห็นภาพรวมเร็วพอ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="เกิดความผิดพลาดจากการทำงานด้วยคน">เกิดความผิดพลาดจากการทำงานด้วยคน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="ยังไม่เห็นปัญหาชัด แต่สนใจศึกษา">ยังไม่เห็นปัญหาชัด แต่สนใจศึกษา</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="current_problems" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="current_problems"><span class="ow-ic">✎</span><input type="text" name="current_problems_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="current_problems_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">06</span><span class="bot">/ 18</span></div><h3>ผลกระทบของปัญหา</h3></div>
+<div class="sec-purpose">ปัญหานี้กระทบเรื่องใดบ้าง</div>
+<div class="field"><label class="q">ผลกระทบที่เกิดขึ้น <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="problem_impact">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="เสียเวลาในการทำงาน">เสียเวลาในการทำงาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="เพิ่มต้นทุนหรือใช้คนมากขึ้น">เพิ่มต้นทุนหรือใช้คนมากขึ้น</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="เสียโอกาสทางขายหรือรายได้">เสียโอกาสทางขายหรือรายได้</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="กระทบประสบการณ์ลูกค้า">กระทบประสบการณ์ลูกค้า</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="กระทบความถูกต้องของข้อมูล">กระทบความถูกต้องของข้อมูล</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="กระทบการตัดสินใจของผู้บริหาร">กระทบการตัดสินใจของผู้บริหาร</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="กระทบ SLA / มาตรฐานการให้บริการ">กระทบ SLA / มาตรฐานการให้บริการ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="ยังไม่สามารถประเมินผลกระทบได้ชัดเจน">ยังไม่สามารถประเมินผลกระทบได้ชัดเจน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="problem_impact" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="problem_impact"><span class="ow-ic">✎</span><input type="text" name="problem_impact_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="problem_impact_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">07</span><span class="bot">/ 18</span></div><h3>ความถี่ของปัญหา</h3></div>
+<div class="sec-purpose">เลือกความถี่ที่ใกล้เคียงที่สุด</div>
+<div class="field"><label class="q">ปัญหาเกิดขึ้นบ่อยแค่ไหน <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices grid" data-group="problem_frequency">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="problem_frequency" value="เกิดทุกวัน">เกิดทุกวัน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="problem_frequency" value="เกิดทุกสัปดาห์">เกิดทุกสัปดาห์</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="problem_frequency" value="เกิดทุกเดือน">เกิดทุกเดือน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="problem_frequency" value="เกิดเฉพาะบางช่วง / ตามฤดูกาล">เกิดเฉพาะบางช่วง / ตามฤดูกาล</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="problem_frequency" value="เกิดไม่บ่อย แต่ถ้าเกิดแล้วมีผลกระทบสูง">เกิดไม่บ่อย แต่ถ้าเกิดแล้วมีผลกระทบสูง</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="problem_frequency" value="ยังไม่แน่ใจ">ยังไม่แน่ใจ</label>
+</div>
+</div>
+</div>
+</div>
+<div class="panel" data-panel="2">
+<div class="panel-title"><span class="pt-badge">STEP 03</span><h2>งานซ้ำ ระบบ &amp; ข้อมูล</h2></div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">08</span><span class="bot">/ 18</span></div><h3>งานที่ทำซ้ำบ่อย</h3></div>
+<div class="sec-purpose">AI Opportunity — งานที่ระบบช่วยลดได้</div>
+<div class="field"><label class="q">งานที่ทีมของท่านทำซ้ำบ่อย <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="repetitive_tasks">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="คัดลอก/วางข้อมูลระหว่างระบบ">คัดลอก / วางข้อมูลระหว่างระบบ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="กรอกข้อมูลซ้ำ">กรอกข้อมูลซ้ำ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="รวบรวมข้อมูลจากหลายไฟล์">รวบรวมข้อมูลจากหลายไฟล์</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="สรุปรายงานประจำวัน/สัปดาห์/เดือน">สรุปรายงานประจำวัน / สัปดาห์ / เดือน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="ตอบคำถามซ้ำจากลูกค้าหรือพนักงาน">ตอบคำถามซ้ำจากลูกค้าหรือพนักงาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="ตรวจเอกสาร ใบสั่งซื้อ ใบแจ้งหนี้ หรือฟอร์ม">ตรวจเอกสาร ใบสั่งซื้อ ใบแจ้งหนี้ หรือฟอร์ม</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="ติดตามสถานะงาน/อนุมัติ/แจ้งเตือน">ติดตามสถานะงาน / อนุมัติ / แจ้งเตือน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="นัดหมาย ประสานงาน หรือส่งข้อมูลซ้ำ">นัดหมาย ประสานงาน หรือส่งข้อมูลซ้ำ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="ไม่มีงานซ้ำที่ชัดเจน">ไม่มีงานซ้ำที่ชัดเจน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="repetitive_tasks" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="repetitive_tasks"><span class="ow-ic">✎</span><input type="text" name="repetitive_tasks_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="repetitive_tasks_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">09</span><span class="bot">/ 18</span></div><h3>Workflow ปัจจุบัน</h3></div>
+<div class="sec-purpose">ตอนนี้งานหลักที่อยากแก้ดำเนินการอย่างไร</div>
+<div class="field"><label class="q">รูปแบบการทำงานปัจจุบัน <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices grid" data-group="current_workflow">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="ทำด้วยคนเป็นหลัก">ทำด้วยคนเป็นหลัก</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="ใช้ Excel / Google Sheet เป็นหลัก">ใช้ Excel / Google Sheet เป็นหลัก</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="ใช้ LINE / Email ในการประสานงานเป็นหลัก">ใช้ LINE / Email ในการประสานงานเป็นหลัก</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="มีระบบอยู่แล้ว แต่ยังต้องทำ manual ต่อ">มีระบบอยู่แล้ว แต่ยังต้องทำ manual ต่อ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="มีหลายระบบ แต่ยังไม่เชื่อมกัน">มีหลายระบบ แต่ยังไม่เชื่อมกัน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="มีระบบค่อนข้างพร้อม แต่อยากต่อยอดด้วย AI/Automation">มีระบบค่อนข้างพร้อม อยากต่อยอดด้วย AI / Automation</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="ยังไม่แน่ใจ ต้องสำรวจร่วมกัน">ยังไม่แน่ใจ ต้องสำรวจร่วมกัน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="current_workflow" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="current_workflow"><span class="ow-ic">✎</span><input type="text" name="current_workflow_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="current_workflow_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">10</span><span class="bot">/ 18</span></div><h3>ระบบหรือข้อมูลที่ใช้อยู่</h3></div>
+<div class="sec-purpose">Integration — ระบบเดิมที่ต้องทำงานร่วมกัน</div>
+<div class="field"><label class="q">ระบบหรือแหล่งข้อมูลที่ใช้อยู่ในปัจจุบัน <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="systems_in_use">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="Excel / Google Sheet">Excel / Google Sheet</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="ERP">ERP</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="CRM">CRM</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="SAP / Oracle / Microsoft Dynamics">SAP / Oracle / Microsoft Dynamics</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="SharePoint / Teams / OneDrive">SharePoint / Teams / OneDrive</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="LINE OA / Chat / Messaging">LINE OA / Chat / Messaging</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="Website / E-commerce / App">Website / E-commerce / App</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="Call Center System">Call Center System</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="POS / Inventory / Warehouse">POS / Inventory / Warehouse</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="ระบบภายในที่พัฒนาเอง">ระบบภายในที่พัฒนาเอง</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="เอกสารกระดาษ / PDF / Scan">เอกสารกระดาษ / PDF / Scan</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="ยังไม่แน่ใจ">ยังไม่แน่ใจ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="systems_in_use" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="systems_in_use"><span class="ow-ic">✎</span><input type="text" name="systems_in_use_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">11</span><span class="bot">/ 18</span></div><h3>ความพร้อมของข้อมูล</h3></div>
+<div class="sec-purpose">Data Readiness — ข้อมูลที่มีอยู่ในองค์กร</div>
+<div class="field"><label class="q">ความพร้อมของข้อมูลในองค์กร <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices grid" data-group="data_readiness">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="ข้อมูลกระจัดกระจายมาก ยังไม่พร้อม">ข้อมูลกระจัดกระจายมาก ยังไม่พร้อม</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="มีข้อมูล แต่ยังไม่เป็นระบบ">มีข้อมูล แต่ยังไม่เป็นระบบ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="มีข้อมูลในบางระบบ แต่ยังไม่ครบ">มีข้อมูลในบางระบบ แต่ยังไม่ครบ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="มีข้อมูลค่อนข้างพร้อม แต่ยังไม่เชื่อมต่อ">มีข้อมูลค่อนข้างพร้อม แต่ยังไม่เชื่อมต่อ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="มีข้อมูลพร้อมและมีทีมดูแลข้อมูล">มีข้อมูลพร้อมและมีทีมดูแลข้อมูล</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="มีข้อมูลพร้อม มีเจ้าของข้อมูล และพร้อมนำไปใช้กับระบบ/AI">มีข้อมูลพร้อม มีเจ้าของข้อมูล พร้อมใช้กับระบบ / AI</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="ยังไม่แน่ใจ ต้องประเมินร่วมกัน">ยังไม่แน่ใจ ต้องประเมินร่วมกัน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="data_readiness" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="data_readiness"><span class="ow-ic">✎</span><input type="text" name="data_readiness_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+</div>
+</div>
+<div class="panel" data-panel="3">
+<div class="panel-title"><span class="pt-badge">STEP 04</span><h2>ข้อจำกัด &amp; ความต้องการ</h2></div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">12</span><span class="bot">/ 18</span></div><h3>ข้อจำกัดหรือความกังวล</h3></div>
+<div class="sec-purpose">ข้อจำกัดที่อาจมีผลต่อโครงการ</div>
+<div class="field"><label class="q">ข้อจำกัดหรือความกังวลขององค์กร <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="constraints">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="ผู้ใช้งานอาจไม่ปรับตัวหรือไม่อยากเปลี่ยนวิธีทำงาน">ผู้ใช้งานอาจไม่ปรับตัวหรือไม่อยากเปลี่ยนวิธีทำงาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="ยังไม่มีเจ้าของโจทย์ชัดเจน">ยังไม่มีเจ้าของโจทย์ชัดเจน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="ข้อมูลยังไม่พร้อมหรือไม่ครบ">ข้อมูลยังไม่พร้อมหรือไม่ครบ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="ระบบเดิมเชื่อมต่อยาก">ระบบเดิมเชื่อมต่อยาก</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="ทีม IT มีเวลาจำกัด">ทีม IT มีเวลาจำกัด</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="งบประมาณยังไม่ชัดเจน">งบประมาณยังไม่ชัดเจน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="ผู้บริหารยังต้องการข้อมูลประกอบการตัดสินใจ">ผู้บริหารยังต้องการข้อมูลประกอบการตัดสินใจ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="ระเบียบภายใน / ขั้นตอนจัดซื้อใช้เวลานาน">ระเบียบภายใน / ขั้นตอนจัดซื้อใช้เวลานาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="PDPA / Security / Compliance">PDPA / Security / Compliance</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="constraints" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="constraints"><span class="ow-ic">✎</span><input type="text" name="constraints_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="constraints_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">13</span><span class="bot">/ 18</span></div><h3>สิ่งที่อยากให้ระบบหรือ AI ช่วย</h3></div>
+<div class="sec-purpose">Functional Requirement — สิ่งที่อยากให้ระบบทำ</div>
+<div class="field"><label class="q">อยากให้ระบบหรือ AI ช่วยเรื่องอะไรบ้าง <span class="req">*</span> <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="ai_help" data-req="1">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="อ่าน/สรุป/ตรวจเอกสารอัตโนมัติ">อ่าน / สรุป / ตรวจเอกสารอัตโนมัติ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="ตอบคำถามลูกค้าหรือพนักงาน">ตอบคำถามลูกค้าหรือพนักงาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="ช่วยค้นข้อมูลจากเอกสารหรือฐานข้อมูล">ช่วยค้นข้อมูลจากเอกสารหรือฐานข้อมูล</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="สร้างรายงานหรือ Dashboard">สร้างรายงานหรือ Dashboard</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="แจ้งเตือนและติดตามสถานะงาน">แจ้งเตือนและติดตามสถานะงาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="ช่วยงานขาย / Lead / CRM">ช่วยงานขาย / Lead / CRM</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="ช่วยงานบริการลูกค้า / Call Center">ช่วยงานบริการลูกค้า / Call Center</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="ช่วยงาน HR / Training / Knowledge">ช่วยงาน HR / Training / Knowledge</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="เชื่อมระบบและลดการกรอกซ้ำ">เชื่อมระบบและลดการกรอกซ้ำ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="ยังไม่รู้ Use Case ต้องการให้ช่วยวิเคราะห์">ยังไม่รู้ Use Case ต้องการให้ช่วยวิเคราะห์</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="ai_help" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="ai_help"><span class="ow-ic">✎</span><input type="text" name="ai_help_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="ai_help_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">14</span><span class="bot">/ 18</span></div><h3>สิ่งที่ระบบใหม่ห้ามเป็น</h3></div>
+<div class="sec-purpose">Constraint — สิ่งที่ไม่อยากให้เกิด</div>
+<div class="field"><label class="q">สิ่งที่ระบบใหม่ห้ามเป็น <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="system_must_not">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ใช้งานยาก">ใช้งานยาก</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ช้า">ช้า</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ต้องกรอกข้อมูลซ้ำ">ต้องกรอกข้อมูลซ้ำ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ต้องเปิดหลายระบบมากกว่าเดิม">ต้องเปิดหลายระบบมากกว่าเดิม</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ข้อมูลไม่ถูกต้อง">ข้อมูลไม่ถูกต้อง</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="แก้ไขหรือดูแลต่อยาก">แก้ไขหรือดูแลต่อยาก</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ต้องพึ่ง vendor ทุกเรื่อง">ต้องพึ่ง vendor ทุกเรื่อง</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ผู้ใช้งานต้องเรียนรู้นานเกินไป">ผู้ใช้งานต้องเรียนรู้นานเกินไป</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="ไม่สามารถวัดผลทางธุรกิจได้">ไม่สามารถวัดผลทางธุรกิจได้</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="system_must_not" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="system_must_not"><span class="ow-ic">✎</span><input type="text" name="system_must_not_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="system_must_not_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+</div>
+<div class="panel" data-panel="4">
+<div class="panel-title"><span class="pt-badge">STEP 05</span><h2>ลำดับความสำคัญ &amp; ขั้นตอนถัดไป</h2></div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">15</span><span class="bot">/ 18</span></div><h3>ลำดับความสำคัญ</h3></div>
+<div class="sec-purpose">ถ้าทำได้ก่อน ควรเริ่มจากเรื่องใด</div>
+<div class="field"><label class="q">เรื่องที่ควรเริ่มก่อน <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices grid" data-group="priority">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="Quick Win ที่เห็นผลเร็ว">Quick Win ที่เห็นผลเร็ว</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="แก้ Pain Point ที่กระทบมากที่สุด">แก้ Pain Point ที่กระทบมากที่สุด</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="เริ่มจากแผนกที่พร้อมที่สุด">เริ่มจากแผนกที่พร้อมที่สุด</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="เริ่มจาก Use Case ที่ข้อมูลพร้อมที่สุด">เริ่มจาก Use Case ที่ข้อมูลพร้อมที่สุด</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="เริ่มจากระบบที่เชื่อมต่อง่ายที่สุด">เริ่มจากระบบที่เชื่อมต่อง่ายที่สุด</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="เริ่มจากโจทย์ที่ผู้บริหารให้ความสำคัญ">เริ่มจากโจทย์ที่ผู้บริหารให้ความสำคัญ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="ต้องการ Workshop เพื่อช่วยจัดลำดับก่อน">ต้องการ Workshop เพื่อช่วยจัดลำดับก่อน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="priority" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="priority"><span class="ow-ic">✎</span><input type="text" name="priority_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="priority_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">16</span><span class="bot">/ 18</span></div><h3>งบประมาณและการลงทุน</h3></div>
+<div class="sec-purpose">เลือกกรอบที่ใกล้เคียงที่สุด</div>
+<div class="field"><label class="q">กรอบงบประมาณโดยประมาณ <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices grid" data-group="budget">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="ยังไม่มีงบ ต้องการประเมินก่อน">ยังไม่มีงบ ต้องการประเมินก่อน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="ไม่ควรเกิน 300,000 บาท">ไม่ควรเกิน 300,000 บาท</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="ไม่ควรเกิน 500,000 บาท">ไม่ควรเกิน 500,000 บาท</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="ไม่ควรเกิน 1 ล้านบาท">ไม่ควรเกิน 1 ล้านบาท</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="ไม่ควรเกิน 3 ล้านบาท">ไม่ควรเกิน 3 ล้านบาท</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="ไม่ควรเกิน 5 ล้านบาท">ไม่ควรเกิน 5 ล้านบาท</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="มากกว่า 5 ล้านบาท หาก Use Case ชัดเจนและคุ้มค่า">มากกว่า 5 ล้านบาท หาก Use Case ชัดเจนและคุ้มค่า</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="budget" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="budget"><span class="ow-ic">✎</span><input type="text" name="budget_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">17</span><span class="bot">/ 18</span></div><h3>ระยะเวลาเริ่มโครงการ</h3></div>
+<div class="sec-purpose">เลือกความพร้อมด้านเวลา</div>
+<div class="field"><label class="q">ท่านพร้อมเริ่มโครงการเมื่อใด <span class="hint">(เลือกข้อที่ใกล้เคียงที่สุด)</span></label>
+<div class="choices grid" data-group="timeline">
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="timeline" value="เริ่มได้ทันทีและต้องการเร่งดำเนินการ">เริ่มได้ทันทีและต้องการเร่งดำเนินการ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="timeline" value="เริ่มได้ภายใน 1 เดือน">เริ่มได้ภายใน 1 เดือน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="timeline" value="เริ่มได้ภายใน 1-3 เดือน">เริ่มได้ภายใน 1-3 เดือน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="timeline" value="เริ่มได้ภายใน 3-6 เดือน">เริ่มได้ภายใน 3-6 เดือน</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="timeline" value="ยังอยู่ช่วงศึกษา">ยังอยู่ช่วงศึกษา</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="timeline" value="ขึ้นอยู่กับข้อเสนอ / งบประมาณ / ผู้บริหารอนุมัติ">ขึ้นอยู่กับข้อเสนอ / งบประมาณ / ผู้บริหารอนุมัติ</label>
+  <label class="choice r"><span class="box"><svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="white"/></svg></span><input type="radio" name="timeline" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="timeline"><span class="ow-ic">✎</span><input type="text" name="timeline_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+</div>
+<div class="section">
+<div class="sec-head"><div class="sec-num"><span class="top">18</span><span class="bot">/ 18</span></div><h3>ขั้นตอนถัดไปที่ต้องการจาก One7AI</h3></div>
+<div class="sec-purpose">สิ่งที่ต้องการให้ช่วยหลังจากนี้</div>
+<div class="field"><label class="q">ต้องการให้ One7AI ช่วยอะไรต่อจากนี้ <span class="req">*</span> <span class="hint">(เลือกได้หลายข้อ)</span></label>
+<div class="choices grid" data-group="next_steps" data-req="1">
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยวิเคราะห์ Requirement ต่อทันที">ช่วยวิเคราะห์ Requirement ต่อทันที</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยทำ Workshop ร่วมกับทีมงาน">ช่วยทำ Workshop ร่วมกับทีมงาน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยออกแบบ Use Case / Solution">ช่วยออกแบบ Use Case / Solution</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยทำ Demo ให้เห็นภาพ">ช่วยทำ Demo ให้เห็นภาพ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยประเมินงบประมาณและระยะเวลา">ช่วยประเมินงบประมาณและระยะเวลา</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยทำ Proposal">ช่วยทำ Proposal</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยทำ POC / Pilot">ช่วยทำ POC / Pilot</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ช่วยเตรียมข้อมูลสำหรับผู้บริหารหรือจัดซื้อ">ช่วยเตรียมข้อมูลสำหรับผู้บริหารหรือจัดซื้อ</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="ขอข้อมูลเพิ่มเติมเพื่อศึกษาก่อน">ขอข้อมูลเพิ่มเติมเพื่อศึกษาก่อน</label>
+  <label class="choice"><span class="box"><svg width="11" height="9" viewBox="0 0 12 10"><path d="M1 5.5L4.2 8.5L11 1.5" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><input type="checkbox" name="next_steps" value="อื่นๆ">อื่น ๆ</label>
+</div>
+<div class="other-wrap" data-owner="next_steps"><span class="ow-ic">✎</span><input type="text" name="next_steps_other" placeholder="โปรดระบุเพิ่มเติม..."></div>
+</div>
+<div class="field note-field"><label class="q nq">คำอธิบายเพิ่มเติม <span class="hint">(ถ้ามี)</span></label><textarea name="next_steps_note" class="note-ta" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea></div>
+</div>
+</div>
+<div class="alert err" id="err"></div>
+
+<div class="nav">
+  <button type="button" class="btn-back" id="btnBack" style="visibility:hidden">← ย้อนกลับ</button>
+  <button type="button" class="btn-next" id="btnNext">ถัดไป →</button>
+  <button type="submit" class="btn-submit" id="btnSubmit" style="display:none">ส่งแบบสอบถาม ✦</button>
+</div>
+
+</form>
+
+<div class="success" id="success">
+  <div class="icon">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6.5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <h2>ส่งข้อมูลเรียบร้อยแล้ว</h2>
+  <p>ขอบคุณสำหรับข้อมูลครับ ทีมงาน One7AI จะติดต่อกลับเพื่อนัดหมาย<br>พูดคุยรายละเอียดภายใน 1–2 วันทำการ</p>
+</div>
+
+</main>
+
+<footer>One7AI · Project Discovery &amp; Requirement Gathering · ข้อมูลของท่านจะถูกใช้เพื่อการออกแบบระบบเท่านั้น</footer>
+
+<script>
+/* ==========================================================
+   ตั้งค่า: วาง URL ของ Google Apps Script Web App ตรงนี้
+   (ดูวิธีตั้งค่าในไฟล์ google-apps-script-setup.md)
+   ========================================================== */
+const SCRIPT_URL = "https://script.google.com/a/macros/merudy.com/s/AKfycbyBzLeDuXVEDcHPBtGvPwxstCtdneQZV-DJY_Vh1QOX5btDZB-JoiK0GJZ8WlpQYYYgbQ/exec";
+
+const panels = [...document.querySelectorAll('.panel')];
+const orbs   = [...document.querySelectorAll('.orb-item')];
+const btnBack = document.getElementById('btnBack');
+const btnNext = document.getElementById('btnNext');
+const btnSubmit = document.getElementById('btnSubmit');
+const errBox = document.getElementById('err');
+const barFill = document.getElementById('barFill');
+const barText = document.getElementById('barText');
+const form = document.getElementById('form');
+const stepNames = ['ขั้นตอนที่ 1','ขั้นตอนที่ 2','ขั้นตอนที่ 3','ขั้นตอนที่ 4','ขั้นตอนที่ 5'];
+let step = 0;
+
+/* ---- แสดง/ซ่อน ช่อง "อื่นๆ โปรดระบุ" ---- */
+document.querySelectorAll('.choices[data-group]').forEach(function(group){
+  const name = group.getAttribute('data-group');
+  const wrap = document.querySelector('.other-wrap[data-owner="' + name + '"]');
+  if(!wrap) return;
+  group.addEventListener('change', function(){
+    const checked = group.querySelector('input[value="อื่นๆ"]:checked');
+    wrap.classList.toggle('show', !!checked);
+    if(checked){ wrap.querySelector('input').focus(); }
+    else { wrap.querySelector('input').value = ''; }
+  });
+});
+
+function render(){
+  panels.forEach(function(p,i){ p.classList.toggle('active', i===step); });
+  orbs.forEach(function(o,i){
+    o.classList.toggle('active', i===step);
+    o.classList.toggle('done', i<step);
+  });
+  barFill.style.width = ((step+1)/panels.length*100) + '%';
+  barText.innerHTML = '<b>' + stepNames[step] + '</b> จาก 5';
+  btnBack.style.visibility = step===0 ? 'hidden' : 'visible';
+  btnNext.style.display = step===panels.length-1 ? 'none' : 'inline-block';
+  btnSubmit.style.display = step===panels.length-1 ? 'inline-block' : 'none';
+  errBox.className = 'alert';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function validateStep(){
+  const p = panels[step];
+  for(const el of p.querySelectorAll('[required]')){
+    if(!el.value.trim()){
+      el.focus();
+      showErr('กรุณากรอกข้อมูลในช่องที่มีเครื่องหมาย * ให้ครบก่อนไปขั้นตอนถัดไป');
+      return false;
+    }
+    if(el.type==='email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value)){
+      el.focus();
+      showErr('รูปแบบอีเมลไม่ถูกต้อง');
+      return false;
+    }
+  }
+  for(const group of p.querySelectorAll('.choices[data-req]')){
+    if(!group.querySelector('input:checked')){
+      group.scrollIntoView({behavior:'smooth', block:'center'});
+      showErr('กรุณาเลือกคำตอบในหัวข้อที่มีเครื่องหมาย * ให้ครบก่อนไปขั้นตอนถัดไป');
+      return false;
+    }
+  }
+  return true;
+}
+
+function showErr(msg){
+  errBox.textContent = '⚠ ' + msg;
+  errBox.className = 'alert err';
+}
+
+btnNext.addEventListener('click', function(){
+  if(!validateStep()) return;
+  step++; render();
+});
+btnBack.addEventListener('click', function(){ step--; render(); });
+
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  if(!validateStep()) return;
+
+  const fd = new FormData(form);
+  const data = { timestamp: new Date().toLocaleString('th-TH') };
+  for(const pair of fd.entries()){
+    const key = pair[0], val = pair[1];
+    if(!val) continue;
+    if(data[key]) data[key] += ', ' + val;
+    else data[key] = val;
+  }
+
+  /* ---- รวมข้อความ "อื่นๆ" เข้ากับคำตอบหลักในคอลัมน์เดียวกัน ---- */
+  Object.keys(data).forEach(function(key){
+    if(key.slice(-6) !== '_other') return;
+    const base = key.slice(0, -6);
+    const extra = data[key].trim();
+    if(extra){
+      if(data[base] && data[base].indexOf('อื่นๆ') !== -1){
+        data[base] = data[base].replace('อื่นๆ', 'อื่นๆ: ' + extra);
+      }else if(data[base]){
+        data[base] += ', อื่นๆ: ' + extra;
+      }else{
+        data[base] = 'อื่นๆ: ' + extra;
+      }
+    }
+    delete data[key];
+  });
+
+  btnSubmit.disabled = true;
+  btnSubmit.textContent = 'กำลังส่งข้อมูล...';
+
+  try{
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(data)
+    });
+    form.style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+    orbs.forEach(function(o){ o.classList.add('done'); o.classList.remove('active'); });
+    barFill.style.width = '100%';
+    barText.innerHTML = '<b>เสร็จสิ้น</b> ✓';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(err){
+    showErr('ส่งข้อมูลไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง');
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = 'ส่งแบบสอบถาม ✦';
+  }
+});
+
+render();
+</script>
+</body>
+</html>
